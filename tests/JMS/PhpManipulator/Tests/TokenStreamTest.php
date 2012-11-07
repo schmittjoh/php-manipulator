@@ -25,6 +25,8 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testOpenTag2()
     {
+        ini_set('short_open_tag', '1');
+
         $this->setCode('<? ;');
         $this->assertTokens(array(
             'MarkerToken(id = ^)',
