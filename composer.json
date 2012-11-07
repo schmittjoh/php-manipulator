@@ -1,0 +1,21 @@
+{
+    "name": "jms/php-manipulator",
+    "description": "Library for Analyzing or Manipulating PHP files using the TokenStream, AST, or both",
+    "keywords": ["php", "source", "modify", "code", "manipulator"],
+    "license": "Apache2",
+    "authors": [
+        {"name": "Johannes M. Schmitt"}
+    ],
+    "require": {
+        "phpoption/phpoption": "dev-master"
+    },
+    "require-dev": {
+        "nikic/php-parser": "0.9.1"
+    },
+    "suggest": {
+        "nikic/php-parser": "If you'd like to have access to an AST"
+    },
+    "autoload": {
+        "psr-0": {"JMS\\PhpManipulator\\": "src/"}
+    }
+}
