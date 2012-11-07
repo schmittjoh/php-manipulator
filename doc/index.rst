@@ -44,7 +44,7 @@ The Token Stream can be used standalone for modifying PHP source files::
             $stream->token->getContentUntil($extends->get());
             $stream->token->getContentBetween($extends->get());
             $stream->token->getWhitespaceAfter();
-            $stream->token->getWhitspaceBefore();
+            $stream->token->getWhitespaceBefore();
             $stream->token->getIndentation();
             $stream->token->getLineIndentation();
         }
