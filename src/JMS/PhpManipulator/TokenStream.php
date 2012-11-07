@@ -29,8 +29,13 @@ use JMS\PhpManipulator\TokenStream\PhpToken;
  */
 class TokenStream
 {
+    /** @var AbstractToken|null */
     public $previous;
+
+    /** @var AbstractToken|null */
     public $token;
+
+    /** @var AbstractToken|null */
     public $next;
 
     private $i;
@@ -113,12 +118,16 @@ class TokenStream
         }
 
         $this->tokens = $this->normalizeTokens(@token_get_all($fragment));
+        $this->addMarkerTokens();
+
         $this->reset();
     }
 
     public function setCode($code)
     {
         $this->tokens = $this->normalizeTokens(@token_get_all($code));
+        $this->addMarkerTokens();
+
         $this->reset();
     }
 
@@ -126,7 +135,7 @@ class TokenStream
      * Normalizes the original PHP token stream into a format which is more
      * usable for analysis.
      *
-     * @param array $tokens
+     * @param array $tokens the format returned by ``token_get_all``
      *
      * @return array the normalized tokens
      */
@@ -177,6 +186,13 @@ class TokenStream
         return $nTokens;
     }
 
+    /**
+     * Inserts a new token before the passed token.
+     *
+     * @param \JMS\PhpManipulator\TokenStream\AbstractToken $token
+     * @param string|integer $type either one of PHP's T_??? constants, or a literal
+     * @param string|null $value When type is a T_??? constant, this should be its value.
+     */
     public function insertBefore(AbstractToken $token, $type, $value = null)
     {
         $this->insertAllTokensBefore($token, array(array($type, $value, $token->getLine())));
@@ -191,7 +207,7 @@ class TokenStream
         $newTokens = array();
         $line = $token->getLine();
         foreach ($tokens as $rawToken) {
-            $newTokens[] = $newToken = array($rawToken[0], isset($rawToken[1]) ? $rawToken[1] : null, $line);
+            $newTokens[] = array($rawToken[0], isset($rawToken[1]) ? $rawToken[1] : null, $line);
             if (isset($rawToken[1])) {
                 $line += substr_count($rawToken[1], "\n");
             }
@@ -202,7 +218,7 @@ class TokenStream
 
     /**
      * @param TokenStream\AbstractToken $token
-     * @param TokenStream\AbstractToken[] $tokens
+     * @param array $tokens the format returned by ``token_get_all``
      */
     private function insertAllTokensBefore(AbstractToken $token, array $tokens)
     {
@@ -269,10 +285,6 @@ class TokenStream
         $this->i = -1;
         $this->token = $this->previous = $this->next = null;
         $this->ignoredTokens = array();
-
-        // Add marker tokens for the beginning and end of the file.
-        array_unshift($this->tokens, new TokenStream\MarkerToken('^', 1));
-        array_push($this->tokens, new TokenStream\MarkerToken('$', end($this->tokens)->getLine()));
 
         $previous = null;
         foreach ($this->tokens as $i => $token) {
@@ -418,5 +430,12 @@ class TokenStream
         }
 
         return null !== $this->token;
+    }
+
+    private function addMarkerTokens()
+    {
+        // Add marker tokens for the beginning and end of the file.
+        array_unshift($this->tokens, new TokenStream\MarkerToken('^', 1));
+        array_push($this->tokens, new TokenStream\MarkerToken('$', end($this->tokens)->getLine()));
     }
 }

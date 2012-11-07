@@ -100,7 +100,7 @@ class PhpToken extends AbstractToken
             return true;
         }
 
-        if (!$that instanceof PhpType) {
+        if (!$that instanceof PhpToken) {
             return false;
         }
 

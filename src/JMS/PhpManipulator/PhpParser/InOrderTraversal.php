@@ -95,7 +95,7 @@ class InOrderTraversal
         }
     }
 
-    private function traverseRight(\PHPParser_Node $node)
+    private function traverseRight(\PHPParser_NodeAbstract $node)
     {
         $right = null;
         switch (true) {
