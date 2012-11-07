@@ -22,6 +22,17 @@ use JMS\PhpManipulator\TokenStream\AbstractToken;
 use JMS\PhpManipulator\TokenStream\LiteralToken;
 use JMS\PhpManipulator\TokenStream\PhpToken;
 
+// Define some constants which are not available on PHP 5.3. It does not really
+// matter what values we assign here, as token_get_all will never return them, and
+// just fail if forced to parse PHP 5.4 code, but it will allow us to use these
+// constants safely in our code.
+if ( ! defined('T_TRAIT')) {
+    define('T_TRAIT', 100001);
+    define('T_INSTEADOF', 100002);
+    define('T_CALLABLE', 100003);
+    define('T_TRAIT_C', 100004);
+}
+
 /**
  * This is an simultaneous stream implementation allowing access to the raw token
  * as well as the higher-level AST stream.
