@@ -144,7 +144,7 @@ class SimultaneousTokenAstStream
                     return;
                 }
 
-                if ($this->nextNode instanceof \PHPParser_Node_Expr_ArrayDimFetch) {
+                if ($self->nextNode instanceof \PHPParser_Node_Expr_ArrayDimFetch) {
                     $self->getAstStream()->skipUntil('PHPParser_Node_Expr_ArrayDimFetch');
 
                     return;
