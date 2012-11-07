@@ -64,7 +64,7 @@ corresponding node of the AST stream as well::
     $stream = new SimultaneousTokenAstStream();
     $stream->setInput($code);
 
-    while ($stream->next()) {
+    while ($stream->moveNext()) {
         echo $stream->token->getContent();
         var_dump(get_class($stream->node)); // "PHPParser_Node_???"
     }
