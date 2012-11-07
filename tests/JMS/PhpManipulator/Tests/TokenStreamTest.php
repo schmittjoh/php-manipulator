@@ -25,7 +25,9 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
 
     public function testOpenTag2()
     {
-        ini_set('short_open_tag', '1');
+        if ('1' !== ini_get('short_open_tag')) {
+            $this->markTestSkipped('Short Open Tags disabled in php.ini.');
+        }
 
         $this->setCode('<? ;');
         $this->assertTokens(array(
