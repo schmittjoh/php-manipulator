@@ -86,7 +86,11 @@ class SimultaneousTokenAstStream
         T_USE => array('PHPParser_Node_Stmt_Use', 'PHPParser_Node_Expr_ClosureUse', 'PHPParser_Node_Stmt_TraitUse'),
         T_NEW => 'PHPParser_Node_Expr_New',
         '{' => 'JMS\PhpManipulator\PhpParser\BlockNode',
-        '=' => array('PHPParser_Node_Expr_Assign', 'PHPParser_Node_Expr_AssignRef'),
+        '=' => array('PHPParser_Node_Expr_Assign', 'PHPParser_Node_Expr_AssignRef', 'PHPParser_Node_Expr_AssignList'),
+        '&' => 'PHPParser_Node_Expr_BitwiseAnd',
+        '|' => 'PHPParser_Node_Expr_BitwiseOr',
+        '^' => 'PHPParser_Node_Expr_BitwiseXor',
+        '~' => 'PHPParser_Node_Expr_BitwiseNot',
         T_OBJECT_OPERATOR => array('PHPParser_Node_Expr_PropertyFetch', 'PHPParser_Node_Expr_MethodCall'),
         T_VARIABLE => array('PHPParser_Node_Expr_Variable', 'PHPParser_Node_Param', 'PHPParser_Node_Stmt_PropertyProperty',
                             'PHPParser_Node_Expr_ClosureUse', 'PHPParser_Node_Expr_StaticPropertyFetch', 'PHPParser_Node_Stmt_StaticVar'),
@@ -95,6 +99,9 @@ class SimultaneousTokenAstStream
         T_INTERFACE => 'PHPParser_Node_Stmt_Interface',
         T_TRAIT => 'PHPParser_Node_Stmt_Trait',
         T_FUNCTION => array('PHPParser_Node_Stmt_Function', 'PHPParser_Node_Stmt_ClassMethod', 'PHPParser_Node_Expr_Closure'),
+        T_CONST => array('PHPParser_Node_Stmt_ClassConst', 'PHPParser_Node_Stmt_Const'),
+        T_LNUMBER => 'PHPParser_Node_Scalar_LNumber',
+        T_DNUMBER => 'PHPParser_Node_Scalar_DNumber',
     );
 
     public function __construct()
@@ -164,6 +171,27 @@ class SimultaneousTokenAstStream
                 if ($self->node instanceof \PHPParser_Node_Param) {
                     return;
                 }
+
+                // Property initializers do not have a specific node.
+                if ($self->node instanceof \PHPParser_Node_Stmt_PropertyProperty) {
+                    return;
+                }
+
+
+                if ($self->node instanceof \PHPParser_Node_Stmt_ClassConst) {
+                    return;
+                }
+
+                if ($self->node instanceof \PHPParser_Node_Stmt_Const) {
+                    return;
+                }
+            }
+
+            if ('&' === $char) {
+                // Ignore assignments by reference as we already have handled that case above.
+                if ($token->findPreviousToken('NO_WHITESPACE_OR_COMMENT')->get()->matches('=')) {
+                    return;
+                }
             }
 
             if (isset($translationMap[$char])) {
@@ -186,6 +214,18 @@ class SimultaneousTokenAstStream
     {
         $this->astStream->setAst($ast ?: PhpParser\ParseUtils::parse($code));
         $this->tokenStream->setCode($code);
+
+        $lastNode = null;
+        while ($this->moveNext()) {
+            if ($lastNode !== $this->node) {
+                $this->node->setAttribute('start_token', $this->token);
+                if (null !== $lastNode) {
+                    $lastNode->setAttribute('end_token', $this->token->getPreviousToken()->get());
+                }
+            }
+            $lastNode = $this->node;
+        }
+        $this->reset();
     }
 
     public function moveToToken(AbstractToken $token)

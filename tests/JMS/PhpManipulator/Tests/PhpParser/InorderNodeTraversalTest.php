@@ -142,6 +142,29 @@ class InorderNodeTraversalTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    public function testBitwiseOperation()
+    {
+        $this->assertOrder('$a = 0 === $b & 4;', array(
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Expr_Assign',
+            'PHPParser_Node_Scalar_LNumber',
+            'PHPParser_Node_Expr_Identical',
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Expr_BitwiseAnd',
+            'PHPParser_Node_Scalar_LNumber',
+        ));
+    }
+
+    public function testAssignList()
+    {
+        $this->assertOrder('list($a,$b) = $c;', array(
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Expr_AssignList',
+            'PHPParser_Node_Expr_Variable',
+        ));
+    }
+
     private function assertOrder($code, array $expectedOrder)
     {
         $this->traverse('<?php '.$code);

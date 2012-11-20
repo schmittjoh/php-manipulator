@@ -74,6 +74,12 @@ class InOrderTraversal
                 $left = $node->var;
                 break;
 
+            case $node instanceof \PHPParser_Node_Expr_AssignList:
+                foreach ($node->vars as $var) {
+                    $this->traverseInternal($var);
+                }
+                break;
+
             case $node instanceof \PHPParser_Node_Expr_PropertyFetch:
             case $node instanceof \PHPParser_Node_Expr_ArrayDimFetch:
             case $node instanceof \PHPParser_Node_Expr_MethodCall:
@@ -110,6 +116,7 @@ class InOrderTraversal
 
             case $node instanceof \PHPParser_Node_Expr_Assign:
             case $node instanceof \PHPParser_Node_Expr_AssignRef:
+            case $node instanceof \PHPParser_Node_Expr_AssignList:
                 $right = $node->expr;
                 break;
 

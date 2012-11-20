@@ -30,6 +30,8 @@ class SimultaneousTokenAndAstStreamTest extends \PHPUnit_Framework_TestCase
             array('string_offset.php'),
             array('assign.php'),
             array('assign_ref.php'),
+            array('bitwise_operations.php'),
+            array('assign_list.php'),
         );
     }
 
