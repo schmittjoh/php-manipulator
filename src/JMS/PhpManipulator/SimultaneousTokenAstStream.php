@@ -86,6 +86,7 @@ class SimultaneousTokenAstStream
         T_USE => array('PHPParser_Node_Stmt_Use', 'PHPParser_Node_Expr_ClosureUse', 'PHPParser_Node_Stmt_TraitUse'),
         T_NEW => 'PHPParser_Node_Expr_New',
         '{' => 'JMS\PhpManipulator\PhpParser\BlockNode',
+        '=' => array('PHPParser_Node_Expr_Assign', 'PHPParser_Node_Expr_AssignRef'),
         T_OBJECT_OPERATOR => array('PHPParser_Node_Expr_PropertyFetch', 'PHPParser_Node_Expr_MethodCall'),
         T_VARIABLE => array('PHPParser_Node_Expr_Variable', 'PHPParser_Node_Param', 'PHPParser_Node_Stmt_PropertyProperty',
                             'PHPParser_Node_Expr_ClosureUse', 'PHPParser_Node_Expr_StaticPropertyFetch', 'PHPParser_Node_Stmt_StaticVar'),
@@ -139,8 +140,7 @@ class SimultaneousTokenAstStream
             }
 
             if ('{' === $char) {
-                $previousToken = $token->getPreviousToken()->get();
-                if ($previousToken->matches(T_OBJECT_OPERATOR)) {
+                if ($token->getPreviousToken()->get()->matches(T_OBJECT_OPERATOR)) {
                     return;
                 }
 
@@ -155,6 +155,13 @@ class SimultaneousTokenAstStream
                 // in real code.
                 $nextToken = $token->findNextToken('NO_WHITESPACE_OR_COMMENT')->get();
                 if ($nextToken->matches(T_CASE) || $nextToken->matches(T_DEFAULT)) {
+                    return;
+                }
+            }
+
+            if ('=' === $char) {
+                // The assignment of default values in parameters has no dedicated node.
+                if ($self->node instanceof \PHPParser_Node_Param) {
                     return;
                 }
             }

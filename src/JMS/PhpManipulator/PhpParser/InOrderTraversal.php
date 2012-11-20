@@ -70,6 +70,7 @@ class InOrderTraversal
                 break;
 
             case $node instanceof \PHPParser_Node_Expr_Assign:
+            case $node instanceof \PHPParser_Node_Expr_AssignRef:
                 $left = $node->var;
                 break;
 
@@ -108,6 +109,7 @@ class InOrderTraversal
                 break;
 
             case $node instanceof \PHPParser_Node_Expr_Assign:
+            case $node instanceof \PHPParser_Node_Expr_AssignRef:
                 $right = $node->expr;
                 break;
 

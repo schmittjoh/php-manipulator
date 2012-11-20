@@ -133,6 +133,15 @@ class InorderNodeTraversalTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    public function testAssignRef()
+    {
+        $this->assertOrder('$a = &$b;', array(
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Expr_AssignRef',
+            'PHPParser_Node_Expr_Variable',
+        ));
+    }
+
     private function assertOrder($code, array $expectedOrder)
     {
         $this->traverse('<?php '.$code);
