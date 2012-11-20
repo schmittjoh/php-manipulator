@@ -76,6 +76,10 @@ class InOrderTraversal
 
             case $node instanceof \PHPParser_Node_Expr_AssignList:
                 foreach ($node->vars as $var) {
+                    if (null === $var) {
+                        continue;
+                    }
+
                     $this->traverseInternal($var);
                 }
                 break;
