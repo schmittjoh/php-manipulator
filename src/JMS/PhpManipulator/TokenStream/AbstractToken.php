@@ -286,6 +286,10 @@ abstract class AbstractToken
      */
     public function getContentUntil(AbstractToken $token)
     {
+        if ($this === $token) {
+            return '';
+        }
+
         $content = $this->getContent();
         $next = $this->nextToken;
 
