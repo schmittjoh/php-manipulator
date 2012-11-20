@@ -188,8 +188,21 @@ class SimultaneousTokenAstStream
             }
 
             if ('&' === $char) {
+                $previousToken = $token->findPreviousToken('NO_WHITESPACE_OR_COMMENT')->get();
                 // Ignore assignments by reference as we already have handled that case above.
-                if ($token->findPreviousToken('NO_WHITESPACE_OR_COMMENT')->get()->matches('=')) {
+                if ($previousToken->matches('=')) {
+                    return;
+                }
+
+                // Value as reference in foreach
+                if ($previousToken->matches(T_AS) || $previousToken->matches(T_DOUBLE_ARROW)) {
+                    return;
+                }
+
+                if ($self->node instanceof \PHPParser_Node_Stmt_Function
+                        || $self->node instanceof \PHPParser_Node_Expr_Closure
+                        || $self->node instanceof \PHPParser_Node_Stmt_ClassMethod
+                        || $self->node instanceof \PHPParser_Node_Param) {
                     return;
                 }
             }
