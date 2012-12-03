@@ -11,3 +11,5 @@ class Foo
 
 foreach ($foo as &$bar) { }
 foreach ($foo as $name => &$bar) { }
+
+$arr = array(&$rs, foo(&$bar));

@@ -54,6 +54,15 @@ class AstStream
         return $this->nodes;
     }
 
+    public function skipUnless($callable)
+    {
+        while ( ! call_user_func($callable, $this->node) && $this->moveNext());
+
+        if (null === $this->node) {
+            throw new \RuntimeException('Matcher could not find any matching node.');
+        }
+    }
+
     public function skipUntil($classes)
     {
         if (!is_array($classes)) {

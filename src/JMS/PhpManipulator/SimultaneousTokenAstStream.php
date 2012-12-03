@@ -87,7 +87,6 @@ class SimultaneousTokenAstStream
         T_NEW => 'PHPParser_Node_Expr_New',
         '{' => 'JMS\PhpManipulator\PhpParser\BlockNode',
         '=' => array('PHPParser_Node_Expr_Assign', 'PHPParser_Node_Expr_AssignRef', 'PHPParser_Node_Expr_AssignList'),
-        '&' => 'PHPParser_Node_Expr_BitwiseAnd',
         '|' => 'PHPParser_Node_Expr_BitwiseOr',
         '^' => 'PHPParser_Node_Expr_BitwiseXor',
         '~' => 'PHPParser_Node_Expr_BitwiseNot',
@@ -102,6 +101,7 @@ class SimultaneousTokenAstStream
         T_CONST => array('PHPParser_Node_Stmt_ClassConst', 'PHPParser_Node_Stmt_Const'),
         T_LNUMBER => 'PHPParser_Node_Scalar_LNumber',
         T_DNUMBER => 'PHPParser_Node_Scalar_DNumber',
+        T_ARRAY => 'PHPParser_Node_Expr_Array',
     );
 
     public function __construct()
@@ -205,6 +205,26 @@ class SimultaneousTokenAstStream
                         || $self->node instanceof \PHPParser_Node_Param) {
                     return;
                 }
+
+                // Move to the next Expr_BitwiseAnd, or Expr_ArrayItem which is assigned by ref,
+                // or Arg which is passed by ref.
+                $self->getAstStream()->skipUnless(function(\PHPParser_Node $node) {
+                    if ($node instanceof \PHPParser_Node_Expr_BitwiseAnd) {
+                        return true;
+                    }
+
+                    if ($node instanceof \PHPParser_Node_Expr_ArrayItem && $node->byRef) {
+                        return true;
+                    }
+
+                    if ($node instanceof \PHPParser_Node_Arg && $node->byRef) {
+                        return true;
+                    }
+
+                    return false;
+                });
+
+                return;
             }
 
             if (isset($translationMap[$char])) {
