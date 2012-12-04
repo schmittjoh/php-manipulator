@@ -101,7 +101,6 @@ class SimultaneousTokenAstStream
         T_CONST => array('PHPParser_Node_Stmt_ClassConst', 'PHPParser_Node_Stmt_Const'),
         T_LNUMBER => 'PHPParser_Node_Scalar_LNumber',
         T_DNUMBER => 'PHPParser_Node_Scalar_DNumber',
-        T_ARRAY => 'PHPParser_Node_Expr_Array',
     );
 
     public function __construct()
@@ -128,10 +127,31 @@ class SimultaneousTokenAstStream
                     return;
                 }
 
-                // For T_VARIABLE that is related to a catch statement, we also
-                // bail out as there again is no dedicated node for it.
-                if ($token->matches(T_VARIABLE)
-                        && $astStream->node instanceof \PHPParser_Node_Stmt_Catch) {
+                if ($token->matches(T_VARIABLE)) {
+                    // For T_VARIABLE that is related to a catch statement, we also
+                    // bail out as there again is no dedicated node for it.
+                    if ($astStream->node instanceof \PHPParser_Node_Stmt_Catch) {
+                        return;
+                    }
+
+                    if ($astStream->node instanceof \PHPParser_Node_Param && $astStream->node->type === 'array') {
+                        return;
+                    }
+                }
+
+                if ($token->matches(T_ARRAY)) {
+                    $astStream->skipUnless(function(\PHPParser_Node $n) {
+                        if ($n instanceof \PHPParser_Node_Expr_Array) {
+                            return true;
+                        }
+
+                        if ($n instanceof \PHPParser_Node_Param && $n->type === 'array') {
+                            return true;
+                        }
+
+                        return false;
+                    });
+
                     return;
                 }
 
