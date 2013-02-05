@@ -140,7 +140,7 @@ class SimultaneousTokenAstStream
                 }
 
                 if ($token->matches(T_ARRAY)) {
-                    $astStream->skipUnless(function(\PHPParser_Node $n) {
+                    $astStream->skipUnless(function(\PHPParser_Node $n = null) {
                         if ($n instanceof \PHPParser_Node_Expr_Array) {
                             return true;
                         }
@@ -197,6 +197,9 @@ class SimultaneousTokenAstStream
                     return;
                 }
 
+                if ($self->node instanceof \PHPParser_Node_Stmt_StaticVar) {
+                    return;
+                }
 
                 if ($self->node instanceof \PHPParser_Node_Stmt_ClassConst) {
                     return;
@@ -244,6 +247,10 @@ class SimultaneousTokenAstStream
                     return false;
                 });
 
+                return;
+            }
+
+            if ('{' === $char && $self->token->matches('$')) {
                 return;
             }
 

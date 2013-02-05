@@ -4,6 +4,7 @@ namespace JMS\PhpManipulator\Tests;
 
 use JMS\PhpManipulator\PhpParser\ParseUtils;
 use JMS\PhpManipulator\SimultaneousTokenAstStream;
+use Scrutinizer\PhpAnalyzer\PhpParser\NodeUtil;
 
 class SimultaneousTokenAndAstStreamTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,7 +16,6 @@ class SimultaneousTokenAndAstStreamTest extends \PHPUnit_Framework_TestCase
     public function testRunsThrough($file)
     {
         $this->loadInput($file);
-        while ($this->stream->moveNext());
     }
 
     public function getRunThroughTests()
@@ -27,10 +27,12 @@ class SimultaneousTokenAndAstStreamTest extends \PHPUnit_Framework_TestCase
             array('case_condition_order.php'),
             array('do_while.php'),
             array('static_variable.php'),
+            array('static_var_with_assign.php'),
             array('string_offset.php'),
             array('assign.php'),
             array('assign_ref.php'),
             array('bitwise_operations.php'),
+            array('dynamic_var.php'),
             array('assign_list.php'),
             array('refs.php'),
             array('array_typehint.php'),

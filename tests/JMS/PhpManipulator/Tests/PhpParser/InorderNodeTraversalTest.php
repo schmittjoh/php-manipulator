@@ -165,6 +165,30 @@ class InorderNodeTraversalTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
+    public function testStaticVar()
+    {
+        $this->assertOrder('function foo() { static $i=0; }', array(
+            'PHPParser_Node_Stmt_Function',
+            'JMS\PhpManipulator\PhpParser\BlockNode',
+            'PHPParser_Node_Stmt_Static',
+            'PHPParser_Node_Stmt_StaticVar',
+            'PHPParser_Node_Scalar_LNumber',
+            'PHPParser_Node_Name',
+        ));
+    }
+
+    public function testDynamicVar()
+    {
+        $this->assertOrder('function foo($x) { ${$x}; }', array(
+            'PHPParser_Node_Stmt_Function',
+            'PHPParser_Node_Param',
+            'JMS\PhpManipulator\PhpParser\BlockNode',
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Expr_Variable',
+            'PHPParser_Node_Name',
+        ));
+    }
+
     private function assertOrder($code, array $expectedOrder)
     {
         $this->traverse('<?php '.$code);
