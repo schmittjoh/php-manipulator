@@ -5,6 +5,7 @@ namespace JMS\PhpManipulator\Tests;
 use JMS\PhpManipulator\TokenStream;
 use JMS\PhpManipulator\TokenStream\LiteralToken;
 use JMS\PhpManipulator\TokenStream\PhpToken;
+use JMS\PhpManipulator\TokenStream\MarkerToken;
 
 class TokenStreamTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,6 +64,26 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
             'PhpToken(T_WHITESPACE, "    ", 3)',
             'MarkerToken(id = $)',
         ));
+    }
+
+    public function testStreamWithWhitespace()
+    {
+        $this->setCode("<?php echo 'hello';");
+        $this->stream->setIgnoreWhitespace(false);
+
+        # begin marker
+        while ($this->stream->moveNext()) {
+            if(!$this->stream->token instanceof MarkerToken) {
+                if($this->stream->token->matches('WHITESPACE')) {
+                    $this->assertFalse(
+                        $this->stream->token->isFirstTokenOnLine(),
+                        "Failed assering that token is not first on line"
+                    );
+                }
+            }
+        }
+
+        $this->assertFalse($this->stream->moveNext());
     }
 
     public function testGetLineContent()
