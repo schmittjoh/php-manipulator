@@ -5,6 +5,7 @@ namespace JMS\PhpManipulator\Tests;
 use JMS\PhpManipulator\TokenStream;
 use JMS\PhpManipulator\TokenStream\LiteralToken;
 use JMS\PhpManipulator\TokenStream\PhpToken;
+use JMS\PhpManipulator\TokenStream\MarkerToken;
 
 class TokenStreamTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,6 +64,24 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
             'PhpToken(T_WHITESPACE, "    ", 3)',
             'MarkerToken(id = $)',
         ));
+    }
+
+    /**
+     * @expectedException \LogicException
+     * @dataProvider         configurationMethodProvider
+     */
+    public function testWrongConfigurationMethodCalls($method)
+    {
+        $this->setCode("<?php ;");
+        $this->stream->$method(false);
+    }
+
+    public function configurationMethodProvider()
+    {
+        return array(
+            array('setIgnoreWhitespace'),
+            array('setIgnoreComments')
+        );
     }
 
     public function testGetLineContent()

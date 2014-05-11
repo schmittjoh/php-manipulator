@@ -22,6 +22,8 @@ use JMS\PhpManipulator\TokenStream\AbstractToken;
 use JMS\PhpManipulator\TokenStream\LiteralToken;
 use JMS\PhpManipulator\TokenStream\PhpToken;
 
+use LogicException;
+
 /**
  * A helper class to work with the token stream.
  *
@@ -49,8 +51,11 @@ class TokenStream
     private $tokensFunction;
     private $afterMoveCallback;
 
+    private $locked = false;
+
     public function setIgnoreComments($bool)
     {
+        if($this->locked) throw new LogicException("Unable to alter ignore_comments configuration, stream is already set.");
         $this->ignoreComments = $bool;
     }
 
@@ -108,6 +113,7 @@ class TokenStream
 
     public function setIgnoreWhitespace($bool)
     {
+        if($this->locked) throw new LogicException("Unable to alter ignore_whitespace configuration, stream is already set.");
         $this->ignoreWhitespace = (boolean) $bool;
     }
 
@@ -125,6 +131,7 @@ class TokenStream
 
     public function setCode($code)
     {
+        $this->locked = true;
         $this->tokens = $this->normalizeTokens(@token_get_all($code));
         $this->addMarkerTokens();
 
