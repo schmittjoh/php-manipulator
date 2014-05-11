@@ -75,6 +75,7 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
         while ($this->stream->moveNext()) {
             if(!$this->stream->token instanceof MarkerToken) {
                 if($this->stream->token->matches('WHITESPACE')) {
+                    $this->assertEquals(1, $this->stream->token->getLine());
                     $this->assertFalse(
                         $this->stream->token->isFirstTokenOnLine(),
                         "Failed assering that token is not first on line"
