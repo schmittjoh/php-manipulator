@@ -5,6 +5,7 @@ namespace JMS\PhpManipulator\Tests;
 use JMS\PhpManipulator\TokenStream;
 use JMS\PhpManipulator\TokenStream\LiteralToken;
 use JMS\PhpManipulator\TokenStream\PhpToken;
+use JMS\PhpManipulator\TokenStream\MarkerToken;
 
 class TokenStreamTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,6 +64,31 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
             'PhpToken(T_WHITESPACE, "    ", 3)',
             'MarkerToken(id = $)',
         ));
+    }
+
+    /**
+     * @dataProvider whitespaceConfigurationProvider
+     */
+    public function testGetWhitespace($flag)
+    {
+        $this->stream->setIgnoreWhitespace($flag);
+        $this->setCode("<?php \n  echo     'foobar';\n        exit;");
+        while ($this->stream->moveNext()) {
+            if( !$this->stream->token instanceof MarkerToken ) {
+                $this->assertEmpty(trim($this->stream->token->getIndentation()));
+                $this->assertEmpty(trim($this->stream->token->getLineIndentation()));
+                $this->assertEmpty(trim($this->stream->token->getWhitespaceBefore()));
+                $this->assertEmpty(trim($this->stream->token->getWhitespaceAfter()));
+            }
+        }
+    }
+
+    public function whitespaceConfigurationProvider()
+    {
+        return [
+            [true ],
+            [false]
+        ];
     }
 
     public function testGetLineContent()
