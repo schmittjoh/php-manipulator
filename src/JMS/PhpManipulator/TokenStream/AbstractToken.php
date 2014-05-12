@@ -214,8 +214,7 @@ abstract class AbstractToken
     public function getIndentation()
     {
         $indentation = $this->getLineIndentation();
-
-        return $indentation.str_repeat(' ', $this->getStartColumn() - strlen($indentation));
+        return $indentation . str_repeat(' ', abs($this->getStartColumn() - strlen($indentation)));
     }
 
     public function getStartColumn()
