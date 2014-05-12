@@ -85,10 +85,10 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
 
     public function whitespaceConfigurationProvider()
     {
-        return [
-            [true ],
-            [false]
-        ];
+        return array(
+            array(true ),
+            array(false)
+        );
     }
 
     public function testGetLineContent()
