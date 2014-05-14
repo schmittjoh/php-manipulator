@@ -215,6 +215,10 @@ abstract class AbstractToken
     {
         $indentation = $this->getLineIndentation();
 
+        if($this->isFirstTokenOnLine() AND $this->matches(T_WHITESPACE)) {
+            $indentation = '';
+        }
+
         return $indentation . str_repeat(' ', abs($this->getStartColumn() - strlen($indentation)));
     }
 
