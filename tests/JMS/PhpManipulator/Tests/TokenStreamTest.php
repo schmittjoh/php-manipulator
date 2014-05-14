@@ -67,27 +67,35 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider whitespaceConfigurationProvider
+     * @dataProvider indentationConfigurationProvider
      */
-    public function testGetWhitespace($flag)
+    public function testGetIndentation($flag, $lineIndentation, $indentation)
     {
         $this->stream->setIgnoreWhitespace($flag);
         $this->setCode("<?php \n  echo     'foobar';\n        exit;");
+        $i = 0;
         while ($this->stream->moveNext()) {
             if( !$this->stream->token instanceof MarkerToken ) {
-                $this->assertEmpty(trim($this->stream->token->getIndentation()));
-                $this->assertEmpty(trim($this->stream->token->getLineIndentation()));
-                $this->assertEmpty(trim($this->stream->token->getWhitespaceBefore()));
-                $this->assertEmpty(trim($this->stream->token->getWhitespaceAfter()));
+                $this->assertEquals($lineIndentation[$i], strlen($this->stream->token->getLineIndentation()));
+                $this->assertEquals($indentation[$i]    , strlen($this->stream->token->getIndentation()));
+                $i++;
             }
         }
     }
 
-    public function whitespaceConfigurationProvider()
+    public function indentationConfigurationProvider()
     {
         return array(
-            array(true ),
-            array(false)
+            array(
+                true,
+                array(0, 0, 0, 0, 0, 0),
+                array(0, 0, 4, 12, 0, 4)
+            ),
+            array(
+                false,
+                array(0, 0, 2, 2, 2, 2, 2, 2, 8, 8, 8),
+                array(0, 5, 0, 2, 6, 11, 19, 20, 0, 8, 12)
+            )
         );
     }
 
