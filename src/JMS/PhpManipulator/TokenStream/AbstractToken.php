@@ -215,7 +215,7 @@ abstract class AbstractToken
     {
         $indentation = $this->getLineIndentation();
 
-        if($this->isFirstTokenOnLine() AND $this->matches(T_WHITESPACE)) {
+        if($this->isFirstTokenOnLine() && $this->matches(T_WHITESPACE)) {
             $indentation = '';
         }
 

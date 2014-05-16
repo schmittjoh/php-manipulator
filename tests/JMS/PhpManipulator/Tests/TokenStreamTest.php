@@ -75,7 +75,7 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
         $this->setCode("<?php \n  echo     'foobar';\n        exit;");
         $i = 0;
         while ($this->stream->moveNext()) {
-            if( !$this->stream->token instanceof MarkerToken ) {
+            if( ! $this->stream->token instanceof MarkerToken) {
                 $this->assertEquals($lineIndentation[$i], strlen($this->stream->token->getLineIndentation()));
                 $this->assertEquals($indentation[$i]    , strlen($this->stream->token->getIndentation()));
                 $i++;
