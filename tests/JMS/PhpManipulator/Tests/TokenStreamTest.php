@@ -5,6 +5,7 @@ namespace JMS\PhpManipulator\Tests;
 use JMS\PhpManipulator\TokenStream;
 use JMS\PhpManipulator\TokenStream\LiteralToken;
 use JMS\PhpManipulator\TokenStream\PhpToken;
+use JMS\PhpManipulator\TokenStream\MarkerToken;
 
 class TokenStreamTest extends \PHPUnit_Framework_TestCase
 {
@@ -63,6 +64,39 @@ class TokenStreamTest extends \PHPUnit_Framework_TestCase
             'PhpToken(T_WHITESPACE, "    ", 3)',
             'MarkerToken(id = $)',
         ));
+    }
+
+    /**
+     * @dataProvider indentationConfigurationProvider
+     */
+    public function testGetIndentation($flag, $lineIndentation, $indentation)
+    {
+        $this->stream->setIgnoreWhitespace($flag);
+        $this->setCode("<?php \n  echo     'foobar';\n        exit;");
+        $i = 0;
+        while ($this->stream->moveNext()) {
+            if( ! $this->stream->token instanceof MarkerToken) {
+                $this->assertEquals($lineIndentation[$i], strlen($this->stream->token->getLineIndentation()));
+                $this->assertEquals($indentation[$i]    , strlen($this->stream->token->getIndentation()));
+                $i++;
+            }
+        }
+    }
+
+    public function indentationConfigurationProvider()
+    {
+        return array(
+            array(
+                true,
+                array(0, 0, 0, 0, 0, 0),
+                array(0, 0, 4, 12, 0, 4)
+            ),
+            array(
+                false,
+                array(0, 0, 2, 2, 2, 2, 2, 2, 8, 8, 8),
+                array(0, 5, 0, 2, 6, 11, 19, 20, 0, 8, 12)
+            )
+        );
     }
 
     public function testGetLineContent()
